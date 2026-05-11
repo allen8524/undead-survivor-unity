@@ -71,7 +71,7 @@ public class AchievementManager : MonoBehaviour
     IEnumerator NoticeRoutine(Achievement achievement)
     {
         if (noticeText != null)
-            noticeText.text = achievement.ToString();
+            noticeText.text = GetAchievementMessage(achievement);
 
         if (notice != null)
             notice.SetActive(true);
@@ -85,6 +85,19 @@ public class AchievementManager : MonoBehaviour
             notice.SetActive(false);
 
         UnlockCharacter();
+    }
+
+    string GetAchievementMessage(Achievement achievement)
+    {
+        switch (achievement)
+        {
+            case Achievement.UnlockSecondCharacter:
+                return "새 캐릭터가 해금되었습니다!";
+            case Achievement.UnlockThirdCharacter:
+                return "생존 보상 캐릭터가 해금되었습니다!";
+            default:
+                return "업적을 달성했습니다!";
+        }
     }
 
     void UnlockCharacter()

@@ -14,12 +14,13 @@ public class Weapon : MonoBehaviour
 
     void Awake()
     {
-        player = GameManager.instance.player;
+        if (GameManager.instance != null)
+            player = GameManager.instance.player;
     }
 
     void Update()
     {
-        if (!GameManager.instance.isLive)
+        if (GameManager.instance == null || !GameManager.instance.isLive)
             return;
 
         switch (type)
@@ -41,20 +42,28 @@ public class Weapon : MonoBehaviour
 
     public void Init(ItemData data)
     {
+        if (data == null || GameManager.instance == null || GameManager.instance.pool == null || player == null)
+            return;
+
         name = "Weapon " + data.itemId;
         transform.parent = player.transform;
         transform.localPosition = Vector3.zero;
 
         id = data.itemId;
+        prefabId = -1;
         damage = data.baseDamage * Character.Damage;
         count = data.baseCount + Character.Count;
 
-        for (int index = 0; index < GameManager.instance.pool.prefabs.Length; index++)
+        GameObject[] prefabs = GameManager.instance.pool.prefabs;
+        if (prefabs != null)
         {
-            if (data.projectile == GameManager.instance.pool.prefabs[index])
+            for (int index = 0; index < prefabs.Length; index++)
             {
-                prefabId = index;
-                break;
+                if (data.projectile == prefabs[index])
+                {
+                    prefabId = index;
+                    break;
+                }
             }
         }
 
@@ -69,8 +78,8 @@ public class Weapon : MonoBehaviour
                 break;
         }
 
-        Hand hand = player.hands != null && data.itemType == ItemData.ItemType.Melee ? player.hands[0] : null;
-        if (hand != null && data.hand != null)
+        Hand hand = player.hands != null && player.hands.Length > 0 && data.itemType == ItemData.ItemType.Melee ? player.hands[0] : null;
+        if (hand != null && hand.spriter != null && data.hand != null)
         {
             hand.spriter.sprite = data.hand;
             hand.gameObject.SetActive(true);
@@ -95,6 +104,9 @@ public class Weapon : MonoBehaviour
 
     void Batch()
     {
+        if (count <= 0 || GameManager.instance == null || GameManager.instance.pool == null)
+            return;
+
         for (int index = 0; index < count; index++)
         {
             Transform bullet;
@@ -105,7 +117,11 @@ public class Weapon : MonoBehaviour
             }
             else
             {
-                bullet = GameManager.instance.pool.Get(prefabId).transform;
+                GameObject bulletObject = GameManager.instance.pool.Get(prefabId);
+                if (bulletObject == null)
+                    return;
+
+                bullet = bulletObject.transform;
                 bullet.parent = transform;
             }
 
@@ -115,23 +131,38 @@ public class Weapon : MonoBehaviour
             Vector3 rotVec = Vector3.forward * 360 * index / count;
             bullet.Rotate(rotVec);
             bullet.Translate(bullet.up * 1.5f, Space.World);
-            bullet.GetComponent<Bullet>().Init(damage, -100, Vector3.zero);
+
+            Bullet bulletComponent = bullet.GetComponent<Bullet>();
+            if (bulletComponent != null)
+                bulletComponent.Init(damage, -100, Vector3.zero);
         }
     }
 
     void Fire()
     {
-        if (player.scanner == null || player.scanner.nearestTarget == null)
+        if (player == null || player.scanner == null || player.scanner.nearestTarget == null || GameManager.instance == null || GameManager.instance.pool == null)
             return;
 
         Vector3 targetPos = player.scanner.nearestTarget.position;
         Vector3 dir = targetPos - transform.position;
         dir = dir.normalized;
 
-        Transform bullet = GameManager.instance.pool.Get(prefabId).transform;
+        GameObject bulletObject = GameManager.instance.pool.Get(prefabId);
+        if (bulletObject == null)
+            return;
+
+        Transform bullet = bulletObject.transform;
         bullet.position = transform.position;
         bullet.rotation = Quaternion.FromToRotation(Vector3.up, dir);
-        bullet.GetComponent<Bullet>().Init(damage, count, dir);
+
+        Bullet bulletComponent = bullet.GetComponent<Bullet>();
+        if (bulletComponent == null)
+        {
+            bulletObject.SetActive(false);
+            return;
+        }
+
+        bulletComponent.Init(damage, count, dir);
 
         if (AudioManager.instance != null)
             AudioManager.instance.PlaySfx(AudioManager.Sfx.Range);

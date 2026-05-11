@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class LevelUp : MonoBehaviour
@@ -13,7 +14,9 @@ public class LevelUp : MonoBehaviour
 
     public void Show()
     {
-        Next();
+        if (rect == null || GameManager.instance == null || !Next())
+            return;
+
         rect.localScale = Vector3.one;
         GameManager.instance.Stop();
 
@@ -26,8 +29,11 @@ public class LevelUp : MonoBehaviour
 
     public void Hide()
     {
-        rect.localScale = Vector3.zero;
-        GameManager.instance.Resume();
+        if (rect != null)
+            rect.localScale = Vector3.zero;
+
+        if (GameManager.instance != null)
+            GameManager.instance.Resume();
 
         if (AudioManager.instance != null)
         {
@@ -42,41 +48,44 @@ public class LevelUp : MonoBehaviour
             items[index].OnClick();
     }
 
-    void Next()
+    bool Next()
     {
+        if (items == null || items.Length == 0)
+            return false;
+
         foreach (Item item in items)
-            item.gameObject.SetActive(false);
-
-        int[] ran = new int[3];
-
-        while (true)
         {
-            ran[0] = Random.Range(0, items.Length);
-            ran[1] = Random.Range(0, items.Length);
-            ran[2] = Random.Range(0, items.Length);
-
-            if (ran[0] != ran[1] && ran[1] != ran[2] && ran[0] != ran[2])
-                break;
+            if (item != null)
+                item.gameObject.SetActive(false);
         }
 
-        for (int index = 0; index < ran.Length; index++)
+        List<Item> candidates = new List<Item>();
+        foreach (Item item in items)
         {
-            Item ranItem = items[ran[index]];
+            if (item != null && item.CanSelect())
+                candidates.Add(item);
+        }
 
-            if (ranItem.level >= ranItem.data.damages.Length)
-            {
-                int alt;
-                do
-                {
-                    alt = Random.Range(0, items.Length);
-                } while (items[alt].level >= items[alt].data.damages.Length);
+        if (candidates.Count == 0)
+            return false;
 
-                items[alt].gameObject.SetActive(true);
-            }
-            else
-            {
-                ranItem.gameObject.SetActive(true);
-            }
+        Shuffle(candidates);
+
+        int showCount = Mathf.Min(3, candidates.Count);
+        for (int index = 0; index < showCount; index++)
+            candidates[index].gameObject.SetActive(true);
+
+        return true;
+    }
+
+    void Shuffle(List<Item> candidates)
+    {
+        for (int index = 0; index < candidates.Count; index++)
+        {
+            int randomIndex = Random.Range(index, candidates.Count);
+            Item temp = candidates[index];
+            candidates[index] = candidates[randomIndex];
+            candidates[randomIndex] = temp;
         }
     }
 }

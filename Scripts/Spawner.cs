@@ -12,16 +12,26 @@ public class Spawner : MonoBehaviour
     void Awake()
     {
         spawnPoint = GetComponentsInChildren<Transform>();
-        levelTime = GameManager.instance.maxGameTime / spawnData.Length;
+
+        if (GameManager.instance == null || spawnData == null || spawnData.Length == 0)
+        {
+            enabled = false;
+            return;
+        }
+
+        levelTime = Mathf.Max(0.01f, GameManager.instance.maxGameTime / spawnData.Length);
     }
 
     void Update()
     {
-        if (!GameManager.instance.isLive)
+        if (GameManager.instance == null || !GameManager.instance.isLive || spawnData == null || spawnData.Length == 0)
             return;
 
         timer += Time.deltaTime;
         level = Mathf.Min(Mathf.FloorToInt(GameManager.instance.gameTime / levelTime), spawnData.Length - 1);
+
+        if (spawnData[level] == null)
+            return;
 
         if (timer > spawnData[level].spawnTime)
         {
@@ -32,9 +42,23 @@ public class Spawner : MonoBehaviour
 
     void Spawn()
     {
+        if (spawnPoint == null || spawnPoint.Length <= 1 || GameManager.instance == null || GameManager.instance.pool == null)
+            return;
+
         GameObject enemy = GameManager.instance.pool.Get(0);
+        if (enemy == null)
+            return;
+
         enemy.transform.position = spawnPoint[Random.Range(1, spawnPoint.Length)].position;
-        enemy.GetComponent<Enemy>().Init(spawnData[level]);
+
+        Enemy enemyComponent = enemy.GetComponent<Enemy>();
+        if (enemyComponent == null)
+        {
+            enemy.SetActive(false);
+            return;
+        }
+
+        enemyComponent.Init(spawnData[level]);
     }
 }
 

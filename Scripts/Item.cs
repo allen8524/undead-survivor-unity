@@ -46,13 +46,16 @@ public class Item : MonoBehaviour
         {
             case ItemData.ItemType.Melee:
             case ItemData.ItemType.Range:
-                if (textDesc != null)
-                    textDesc.text = string.Format(data.itemDesc, data.damages[level] * 100, data.counts[level]);
+                if (textDesc != null && TryGetDamage(level, out float weaponDamage))
+                {
+                    int count = GetCount(level);
+                    textDesc.text = string.Format(data.itemDesc, weaponDamage * 100, count);
+                }
                 break;
             case ItemData.ItemType.Glove:
             case ItemData.ItemType.Shoe:
-                if (textDesc != null)
-                    textDesc.text = string.Format(data.itemDesc, data.damages[level] * 100);
+                if (textDesc != null && TryGetDamage(level, out float gearRate))
+                    textDesc.text = string.Format(data.itemDesc, gearRate * 100);
                 break;
             case ItemData.ItemType.Heal:
                 if (textDesc != null)
@@ -63,7 +66,7 @@ public class Item : MonoBehaviour
 
     public void OnClick()
     {
-        if (data == null)
+        if (data == null || !CanSelect())
             return;
 
         switch (data.itemType)
@@ -78,10 +81,12 @@ public class Item : MonoBehaviour
                 }
                 else
                 {
+                    if (weapon == null || !TryGetDamage(level, out float damageRate))
+                        return;
+
                     float nextDamage = data.baseDamage;
-                    int nextCount = 0;
-                    nextDamage += data.baseDamage * data.damages[level];
-                    nextCount += data.counts[level];
+                    int nextCount = GetCount(level);
+                    nextDamage += data.baseDamage * damageRate;
                     weapon.LevelUp(nextDamage, nextCount);
                 }
 
@@ -97,21 +102,60 @@ public class Item : MonoBehaviour
                 }
                 else
                 {
-                    float nextRate = data.damages[level];
+                    if (gear == null || !TryGetDamage(level, out float nextRate))
+                        return;
+
                     gear.LevelUp(nextRate);
                 }
 
                 level++;
                 break;
             case ItemData.ItemType.Heal:
-                GameManager.instance.health = GameManager.instance.MaxHealth;
+                if (GameManager.instance != null)
+                    GameManager.instance.health = GameManager.instance.maxHealth;
                 break;
         }
 
-        if (level == data.damages.Length)
-            GetComponent<Button>().interactable = false;
+        if (!CanSelect())
+        {
+            Button button = GetComponent<Button>();
+            if (button != null)
+                button.interactable = false;
+        }
 
-        if (GameManager.instance.uiLevelUp != null)
+        if (GameManager.instance != null && GameManager.instance.uiLevelUp != null)
             GameManager.instance.uiLevelUp.Hide();
+    }
+
+    public bool CanSelect()
+    {
+        if (data == null)
+            return false;
+
+        if (data.itemType == ItemData.ItemType.Heal)
+            return true;
+
+        return data.damages != null && data.damages.Length > 0 && level < data.damages.Length;
+    }
+
+    bool TryGetDamage(int index, out float value)
+    {
+        value = 0f;
+
+        if (data == null || data.damages == null || data.damages.Length == 0)
+            return false;
+
+        int safeIndex = Mathf.Clamp(index, 0, data.damages.Length - 1);
+        value = data.damages[safeIndex];
+        return true;
+    }
+
+    int GetCount(int index)
+    {
+        if (data == null || data.counts == null || data.counts.Length == 0)
+            return 0;
+
+        int safeIndex = Mathf.Clamp(index, 0, data.counts.Length - 1);
+        return data.counts[safeIndex];
     }
 }

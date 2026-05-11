@@ -9,12 +9,12 @@ public class GameManager : MonoBehaviour
     [Header("# Game Control")]
     public bool isLive;
     public float gameTime;
-    public float maxGameTime = 4 * 10f;
+    public float maxGameTime = 40f;
 
     [Header("# Player Info")]
     public int playerId;
     public float health;
-    public float MaxHealth = 100;
+    public float maxHealth = 100f;
     public int level;
     public int kill;
     public int exp;
@@ -37,7 +37,7 @@ public class GameManager : MonoBehaviour
     public void GameStart(int id)
     {
         playerId = id;
-        health = MaxHealth;
+        health = maxHealth;
 
         if (player != null)
             player.gameObject.SetActive(true);
@@ -134,7 +134,7 @@ public class GameManager : MonoBehaviour
 
     public void GetExp()
     {
-        if (!isLive)
+        if (!isLive || nextExp == null || nextExp.Length == 0)
             return;
 
         exp++;

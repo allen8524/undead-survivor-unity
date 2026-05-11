@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Hub : MonoBehaviour
+public class HUD : MonoBehaviour
 {
     public enum InfoType { Exp, Level, Kill, Time, Health }
     public InfoType type;
@@ -17,10 +17,10 @@ public class Hub : MonoBehaviour
 
     void Start()
     {
-        if (type == InfoType.Health && mySlider != null)
+        if (type == InfoType.Health && mySlider != null && GameManager.instance != null)
         {
             mySlider.minValue = 0f;
-            mySlider.maxValue = GameManager.instance.MaxHealth;
+            mySlider.maxValue = GameManager.instance.maxHealth;
         }
     }
 
@@ -34,6 +34,12 @@ public class Hub : MonoBehaviour
             case InfoType.Exp:
                 if (mySlider != null)
                 {
+                    if (GameManager.instance.nextExp == null || GameManager.instance.nextExp.Length == 0)
+                    {
+                        mySlider.value = 0f;
+                        break;
+                    }
+
                     float curExp = GameManager.instance.exp;
                     float maxExp = GameManager.instance.nextExp[Mathf.Min(GameManager.instance.level, GameManager.instance.nextExp.Length - 1)];
                     mySlider.value = maxExp <= 0 ? 0 : curExp / maxExp;
