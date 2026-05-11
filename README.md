@@ -17,6 +17,7 @@ Undead Survivor는 플레이어가 몰려오는 적을 피하며 제한 시간 �
 | 항목 | 내용 |
 |---|---|
 | 프로젝트명 | Undead Survivor |
+| 프로젝트 성격 | 모바일게임개발 기말 프로젝트 |
 | 개발 형태 | 개인 프로젝트 |
 | 개발 기간 | 약 2주 |
 | 담당 역할 | 게임 로직 구현, UI 흐름 구성, Android APK 빌드 |
@@ -137,23 +138,23 @@ undead-survivor-unity/
 
 ## APK
 
-`APK/Undead-Survivor.apk` 파일을 통해 Android 빌드 결과물을 확인할 수 있습니다.
+Android 빌드 파일은 `APK/Undead-Survivor.apk`에서 확인할 수 있습니다. Android 기기에 직접 설치해 플레이 흐름을 확인할 수 있으며, 기기 설정에 따라 "알 수 없는 앱 설치 허용"이 필요할 수 있습니다.
 
 ## 스크린샷
 
-| 캐릭터 선택 | 자동 공격 | 레벨업 보상 |
-|---|---|---|
-| ![캐릭터 선택](Screenshots/gameplay-character-select.png) | ![자동 공격](Screenshots/gameplay-combat.png) | ![레벨업 보상](Screenshots/gameplay-levelup.png) |
+| 캐릭터 선택 | 전투 화면 | 레벨업 보상 | 생존 결과 |
+|---|---|---|---|
+| ![캐릭터 선택](Screenshots/gameplay-character-select.png) | ![전투 화면](Screenshots/gameplay-combat.png) | ![레벨업 보상](Screenshots/gameplay-levelup.png) | ![생존 결과](Screenshots/gameplay-survived.png) |
 
 ## 데모 영상
 
 아래 링크에서 Android 빌드 기준 게임 플레이 흐름을 확인할 수 있습니다.
 
-https://www.youtube.com/watch?v=Qbc1FhH--z4
+[Undead Survivor 시연 영상 보기](https://www.youtube.com/watch?v=Qbc1FhH--z4)
 
 ## 참고 자료
 
-- Unity 모바일 게임 개발 학습 자료를 참고해 구현했습니다.
+- Unity 기반 모바일 생존형 게임 구조를 학습하며 구현 과정에 아래 자료를 참고했습니다.
   https://www.youtube.com/playlist?list=PLO-mt5Iu5TeZF8xMHqtT_DhAPKmjF6i3x
 - 그래픽 리소스는 Unity Asset Store의 Undead Survivor Assets Pack을 사용했습니다.
   https://assetstore.unity.com/packages/2d/undead-survivor-assets-pack-238068

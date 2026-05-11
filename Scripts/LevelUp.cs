@@ -14,8 +14,17 @@ public class LevelUp : MonoBehaviour
 
     public void Show()
     {
-        if (rect == null || GameManager.instance == null || !Next())
+        if (rect == null || GameManager.instance == null)
             return;
+
+        bool hasSelectableItem = Next();
+        if (!hasSelectableItem)
+        {
+            if (!GameManager.instance.isLive)
+                GameManager.instance.Resume();
+
+            return;
+        }
 
         rect.localScale = Vector3.one;
         GameManager.instance.Stop();
@@ -44,12 +53,28 @@ public class LevelUp : MonoBehaviour
 
     public void Select(int index)
     {
+        SelectItem(index);
+    }
+
+    public void SelectDefaultItem(int playerId)
+    {
+        if (items == null || items.Length == 0)
+            return;
+
+        int defaultItemCount = Mathf.Min(2, items.Length);
+        int defaultIndex = Mathf.Abs(playerId) % defaultItemCount;
+        SelectItem(defaultIndex);
+    }
+
+    void SelectItem(int index)
+    {
         if (items != null && index >= 0 && index < items.Length)
             items[index].OnClick();
     }
 
     bool Next()
     {
+        // 선택 가능한 보상만 추려 최대 3개를 표시한다.
         if (items == null || items.Length == 0)
             return false;
 

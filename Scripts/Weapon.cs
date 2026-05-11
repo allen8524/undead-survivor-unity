@@ -104,6 +104,7 @@ public class Weapon : MonoBehaviour
 
     void Batch()
     {
+        // 근접 무기는 플레이어 주변에 투사체를 배치해 회전 공격을 만든다.
         if (count <= 0 || GameManager.instance == null || GameManager.instance.pool == null)
             return;
 
@@ -140,6 +141,7 @@ public class Weapon : MonoBehaviour
 
     void Fire()
     {
+        // 가장 가까운 적 방향으로 원거리 투사체를 발사한다.
         if (player == null || player.scanner == null || player.scanner.nearestTarget == null || GameManager.instance == null || GameManager.instance.pool == null)
             return;
 

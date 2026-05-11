@@ -49,6 +49,7 @@ public class AchievementManager : MonoBehaviour
 
     void CheckAchievement(Achievement achievement)
     {
+        // 코드용 업적 조건을 확인하고 화면에는 별도 안내 문구를 표시한다.
         bool isAchieved = false;
 
         switch (achievement)
