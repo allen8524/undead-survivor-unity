@@ -1,0 +1,139 @@
+using UnityEngine;
+
+public class Weapon : MonoBehaviour
+{
+    public ItemData.ItemType type;
+    public int id;
+    public int prefabId;
+    public float damage;
+    public int count;
+    public float speed;
+
+    float timer;
+    Player player;
+
+    void Awake()
+    {
+        player = GameManager.instance.player;
+    }
+
+    void Update()
+    {
+        if (!GameManager.instance.isLive)
+            return;
+
+        switch (type)
+        {
+            case ItemData.ItemType.Melee:
+                transform.Rotate(Vector3.back * speed * Time.deltaTime);
+                break;
+            case ItemData.ItemType.Range:
+                timer += Time.deltaTime;
+
+                if (timer > speed)
+                {
+                    timer = 0f;
+                    Fire();
+                }
+                break;
+        }
+    }
+
+    public void Init(ItemData data)
+    {
+        name = "Weapon " + data.itemId;
+        transform.parent = player.transform;
+        transform.localPosition = Vector3.zero;
+
+        id = data.itemId;
+        damage = data.baseDamage * Character.Damage;
+        count = data.baseCount + Character.Count;
+
+        for (int index = 0; index < GameManager.instance.pool.prefabs.Length; index++)
+        {
+            if (data.projectile == GameManager.instance.pool.prefabs[index])
+            {
+                prefabId = index;
+                break;
+            }
+        }
+
+        switch (data.itemType)
+        {
+            case ItemData.ItemType.Melee:
+                speed = 150 * Character.WeaponSpeed;
+                Batch();
+                break;
+            case ItemData.ItemType.Range:
+                speed = 0.5f * Character.WeaponRate;
+                break;
+        }
+
+        Hand hand = player.hands != null && data.itemType == ItemData.ItemType.Melee ? player.hands[0] : null;
+        if (hand != null && data.hand != null)
+        {
+            hand.spriter.sprite = data.hand;
+            hand.gameObject.SetActive(true);
+        }
+
+        type = data.itemType;
+    }
+
+    public void LevelUp(float damage, int count)
+    {
+        this.damage = damage * Character.Damage;
+        this.count += count;
+
+        if (type == ItemData.ItemType.Melee)
+            Batch();
+    }
+
+    public void ApplyGearRate(float rate)
+    {
+        speed = Mathf.Max(0.05f, speed * (1f - rate));
+    }
+
+    void Batch()
+    {
+        for (int index = 0; index < count; index++)
+        {
+            Transform bullet;
+
+            if (index < transform.childCount)
+            {
+                bullet = transform.GetChild(index);
+            }
+            else
+            {
+                bullet = GameManager.instance.pool.Get(prefabId).transform;
+                bullet.parent = transform;
+            }
+
+            bullet.localPosition = Vector3.zero;
+            bullet.localRotation = Quaternion.identity;
+
+            Vector3 rotVec = Vector3.forward * 360 * index / count;
+            bullet.Rotate(rotVec);
+            bullet.Translate(bullet.up * 1.5f, Space.World);
+            bullet.GetComponent<Bullet>().Init(damage, -100, Vector3.zero);
+        }
+    }
+
+    void Fire()
+    {
+        if (player.scanner == null || player.scanner.nearestTarget == null)
+            return;
+
+        Vector3 targetPos = player.scanner.nearestTarget.position;
+        Vector3 dir = targetPos - transform.position;
+        dir = dir.normalized;
+
+        Transform bullet = GameManager.instance.pool.Get(prefabId).transform;
+        bullet.position = transform.position;
+        bullet.rotation = Quaternion.FromToRotation(Vector3.up, dir);
+        bullet.GetComponent<Bullet>().Init(damage, count, dir);
+
+        if (AudioManager.instance != null)
+            AudioManager.instance.PlaySfx(AudioManager.Sfx.Range);
+    }
+}
