@@ -74,7 +74,6 @@ public class LevelUp : MonoBehaviour
 
     bool Next()
     {
-        // 선택 가능한 보상만 추려 최대 3개를 표시한다.
         if (items == null || items.Length == 0)
             return false;
 

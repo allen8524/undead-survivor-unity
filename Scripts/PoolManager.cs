@@ -23,7 +23,6 @@ public class PoolManager : MonoBehaviour
 
     public GameObject Get(int index)
     {
-        // 비활성화된 오브젝트를 우선 재사용하고, 없을 때만 새로 생성한다.
         if (prefabs == null || index < 0 || index >= prefabs.Length || prefabs[index] == null)
             return null;
 

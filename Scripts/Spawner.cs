@@ -42,7 +42,6 @@ public class Spawner : MonoBehaviour
 
     void Spawn()
     {
-        // 진행 시간에 맞는 스폰 데이터를 기준으로 적을 배치한다.
         if (spawnPoint == null || spawnPoint.Length <= 1 || GameManager.instance == null || GameManager.instance.pool == null)
             return;
 

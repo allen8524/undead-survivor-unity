@@ -134,7 +134,6 @@ public class GameManager : MonoBehaviour
 
     public void GetExp()
     {
-        // 경험치 조건을 만족하면 레벨업 보상 선택 흐름으로 넘긴다.
         if (!isLive || nextExp == null || nextExp.Length == 0)
             return;
 

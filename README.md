@@ -1,16 +1,16 @@
 # Undead Survivor
 
-![Undead Survivor Gameplay](Screenshots/gameplay-main.png)
+![Undead Survivor 전투 화면](Screenshots/gameplay-main.png)
 
-Unity와 C#으로 제작한 모바일 생존형 액션 게임입니다.
+Unity와 C#으로 제작한 Android 기반 모바일 생존형 액션 게임입니다.
 
-몰려오는 적을 피하며 자동 공격, 적 스폰, 오브젝트 풀링, 레벨업 보상, 결과 화면으로 이어지는 플레이 루프를 구현했습니다. 이 저장소는 Unity 기반 모바일 게임의 주요 C# 게임 로직과 Android APK 빌드 파일을 정리한 저장소입니다.
+플레이어 이동, 자동 공격, 적 스폰, 오브젝트 풀링, 레벨업 보상, 결과 화면까지 이어지는 플레이 루프를 구현했습니다. 저장소에는 주요 C# 스크립트, 진행 흐름 문서, 스크린샷, Android APK 빌드 파일을 정리했습니다.
 
 ## 프로젝트 소개
 
-Undead Survivor는 플레이어가 몰려오는 적을 피하며 제한 시간 동안 생존하는 모바일 생존형 액션 게임입니다. 주변 적을 자동으로 탐지해 공격하고, 적 처치를 통해 경험치를 얻은 뒤 레벨업 보상으로 무기와 장비를 강화하는 흐름으로 구성했습니다.
+Undead Survivor는 몰려오는 적을 피하며 제한 시간 동안 생존하는 모바일 생존형 액션 게임입니다. 주변 적을 자동으로 탐지하고 공격하며, 적 처치로 얻은 경험치를 통해 무기와 장비를 선택해 성장합니다.
 
-생존 성공 또는 사망 시 결과 화면으로 전환되며, 처치 수 100 이상과 제한 시간 생존 조건을 기준으로 캐릭터 해금 상태를 관리합니다.
+생존 성공 또는 사망 시 결과 화면으로 전환되며, 처치 수와 생존 조건에 따라 캐릭터 해금 상태를 관리합니다.
 
 ## 개발 정보
 
@@ -38,23 +38,23 @@ Undead Survivor는 플레이어가 몰려오는 적을 피하며 제한 시간 �
 
 ### 플레이어 이동
 
-`Player.cs`는 입력 축을 기반으로 이동 방향을 계산하고 `Rigidbody2D.MovePosition`으로 위치를 갱신합니다. `Character.cs`는 선택된 캐릭터에 따라 이동 속도, 공격 속도, 피해량, 투사체 수 보정값을 제공합니다.
+`Player.cs`는 입력 축을 기반으로 이동 방향을 계산하고 `Rigidbody2D.MovePosition`으로 위치를 갱신합니다. `Character.cs`는 선택 캐릭터에 따른 이동 속도, 공격 속도, 피해량, 투사체 수 보정값을 제공합니다.
 
 ### 자동 공격 시스템
 
-`Scanner.cs`가 주변 적 중 가장 가까운 대상을 찾고, `Weapon.cs`가 무기 타입에 따라 근접 회전 공격 또는 원거리 투사체 발사를 처리합니다. `Bullet.cs`는 피해량과 관통 횟수, 비활성화 흐름을 담당합니다.
+`Scanner.cs`가 주변 적 중 가장 가까운 대상을 찾고, `Weapon.cs`가 무기 타입에 따라 근접 회전 공격 또는 원거리 발사를 처리합니다. `Bullet.cs`는 피해량, 관통 횟수, 비활성화 흐름을 담당합니다.
 
 ### 적 스폰 시스템
 
-`Spawner.cs`는 진행 시간에 따라 `SpawnData`를 선택하고 스폰 포인트에 적을 배치합니다. `Enemy.cs`는 플레이어 추적, 피격, 사망, 경험치 지급 흐름을 처리합니다.
+`Spawner.cs`는 진행 시간에 맞는 `SpawnData`를 선택하고 스폰 포인트에 적을 배치합니다. `Enemy.cs`는 플레이어 추적, 피격, 사망, 경험치 지급을 처리합니다.
 
 ### 오브젝트 풀링
 
-`PoolManager.cs`는 프리팹 타입별 풀을 관리하고 비활성 오브젝트를 `SetActive(true)`로 재사용합니다. 적과 투사체처럼 반복적으로 등장하는 오브젝트의 런타임 생성 비용을 줄이기 위한 구조입니다.
+`PoolManager.cs`는 프리팹 타입별 풀을 관리하고 비활성 오브젝트를 재사용합니다. 적과 투사체처럼 반복해서 등장하는 오브젝트의 생성 비용을 줄였습니다.
 
 ### 레벨업 및 아이템 선택
 
-`LevelUp.cs`는 선택 가능한 보상 아이템을 추려 최대 3개를 보여줍니다. `ItemData.cs`, `Item.cs`, `Gear.cs`는 아이템 데이터, 선택 처리, 무기/장비 성장 효과를 연결합니다.
+`LevelUp.cs`는 선택 가능한 보상 아이템을 추려 최대 3개를 표시합니다. `ItemData.cs`, `Item.cs`, `Gear.cs`는 아이템 데이터, 선택 처리, 무기와 장비 성장 효과를 연결합니다.
 
 ### 게임 상태 및 결과 처리
 
@@ -67,10 +67,10 @@ Undead Survivor는 플레이어가 몰려오는 적을 피하며 제한 시간 �
 ## 핵심 구현 포인트
 
 - `PoolManager` 기반으로 적과 투사체를 재사용해 반복 생성 비용을 줄였습니다.
-- `Scanner`, `Weapon`, `Bullet`을 연결해 주변 적 탐지부터 공격 처리까지 자동 전투 흐름을 구성했습니다.
-- `GameManager`가 게임 시간, 생존 상태, 경험치, 결과 화면 흐름을 중심에서 관리하도록 구성했습니다.
-- `ItemData` 기반 아이템 데이터와 `LevelUp` UI를 연결해 성장 선택 구조를 만들었습니다.
-- `Player`는 이동 입력만 처리하고 공격은 자동화해 모바일 환경에 맞는 단순 조작을 구성했습니다.
+- `Scanner`, `Weapon`, `Bullet`을 연결해 자동 전투 흐름을 구성했습니다.
+- `GameManager`가 시간, 체력, 경험치, 결과 흐름을 중심에서 관리합니다.
+- `ItemData`와 `LevelUp`을 연결해 아이템 선택 기반 성장 구조를 구성했습니다.
+- `Player`는 이동 입력만 처리하고 공격은 자동화해 모바일 조작 부담을 줄였습니다.
 
 ## 폴더 구조
 
@@ -138,13 +138,15 @@ undead-survivor-unity/
 
 ## APK
 
-Android 빌드 파일은 `APK/Undead-Survivor.apk`에서 확인할 수 있습니다. Android 기기에 직접 설치해 플레이 흐름을 확인할 수 있으며, 기기 설정에 따라 "알 수 없는 앱 설치 허용"이 필요할 수 있습니다.
+Android 빌드 파일은 `APK/Undead-Survivor.apk`에서 확인할 수 있습니다.
 
 ## 스크린샷
 
-| 캐릭터 선택 | 전투 화면 | 레벨업 보상 | 생존 결과 |
-|---|---|---|---|
-| ![캐릭터 선택](Screenshots/gameplay-character-select.png) | ![전투 화면](Screenshots/gameplay-combat.png) | ![레벨업 보상](Screenshots/gameplay-levelup.png) | ![생존 결과](Screenshots/gameplay-survived.png) |
+| 캐릭터 선택 | 전투 화면 |
+|---|---|
+| ![캐릭터 선택](Screenshots/gameplay-character-select.png) | ![전투 화면](Screenshots/gameplay-combat.png) |
+| 레벨업 보상 | 생존 결과 |
+| ![레벨업 보상](Screenshots/gameplay-levelup.png) | ![생존 결과](Screenshots/gameplay-survived.png) |
 
 ## 데모 영상
 
@@ -154,10 +156,12 @@ Android 빌드 파일은 `APK/Undead-Survivor.apk`에서 확인할 수 있습니
 
 ## 참고 자료
 
-- Unity 기반 모바일 생존형 게임 구조를 학습하며 구현 과정에 아래 자료를 참고했습니다.
-  https://www.youtube.com/playlist?list=PLO-mt5Iu5TeZF8xMHqtT_DhAPKmjF6i3x
-- 그래픽 리소스는 Unity Asset Store의 Undead Survivor Assets Pack을 사용했습니다.
-  https://assetstore.unity.com/packages/2d/undead-survivor-assets-pack-238068
+구현 과정에서 Unity 모바일 게임 개발 학습 자료와 에셋 리소스를 참고했습니다.
+
+| 구분 | 링크 |
+|---|---|
+| YouTube 학습 자료 | https://www.youtube.com/playlist?list=PLO-mt5Iu5TeZF8xMHqtT_DhAPKmjF6i3x |
+| Unity Asset Store | https://assetstore.unity.com/packages/2d/undead-survivor-assets-pack-238068 |
 
 ## 문서
 
